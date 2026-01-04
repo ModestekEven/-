@@ -8,21 +8,20 @@ const SYSTEM_INSTRUCTION = `
 关于牛渝文：
 - 身份：${PERSONAL_INFO.motto}
 - 背景：${PERSONAL_INFO.bio}
-- 主要成就：${ACHIEVEMENTS.map(a => a.title).slice(0, 10).join(', ')}
+- 主要成就：${ACHIEVEMENTS.map(a => a.title).slice(0, 15).join(', ')}
 
 指令：
 1. 风格：睿智、专业、富有创业者活力。
-2. 实时搜索：对于任何涉及最新技术趋势、行业动态或不确定的事实，请务必使用 googleSearch 进行实时检索。
+2. 实时搜索：对于任何涉及最新动态、行业趋势或不确定的事实，请务必使用 googleSearch 进行实时检索。
 3. 语言：中文回答。
 `;
 
 export const getGeminiResponse = async (userMessage: string) => {
-  // 必须直接使用 process.env.API_KEY
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
     return {
-      text: "抱歉，由于 API 配置缺失，我目前只能基于离线资料为您服务。牛渝文是一位深耕 AI 青少年教育的创业者。",
+      text: "你好！我是牛渝文的 AI 助手。由于目前 API 密钥未配置，我只能为您提供预设的资料查询。牛渝文是一位深耕 AI 青少年教育的创业者。",
       sources: []
     };
   }
@@ -41,7 +40,7 @@ export const getGeminiResponse = async (userMessage: string) => {
 
     const text = response.text || "无法获取 AI 的回答。";
     
-    // 提取 Grounding 元数据中的链接
+    // 提取 Grounding 元数据
     const sources: GroundingSource[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     
@@ -56,7 +55,7 @@ export const getGeminiResponse = async (userMessage: string) => {
       });
     }
 
-    // 来源去重
+    // 去重
     const uniqueSources = Array.from(new Set(sources.map(s => s.uri)))
       .map(uri => sources.find(s => s.uri === uri)!);
 
@@ -64,7 +63,7 @@ export const getGeminiResponse = async (userMessage: string) => {
   } catch (error) {
     console.error("Gemini API Error:", error);
     return {
-      text: "访问 AI 服务时出错，请检查您的网络连接或 API Key 是否有效。",
+      text: "连接 AI 服务时遇到问题。请确认您的 API 密钥是否有效且具有访问权限。",
       sources: []
     };
   }
