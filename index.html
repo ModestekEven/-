@@ -93,8 +93,8 @@
 
     <div id="error-display"></div>
 
-    <!-- 使用相对路径确保在所有环境中正确加载 -->
-    <script type="module" src="./index.tsx"></script>
+    <!-- 移除了 ./ 确保路径在不同路由下更健壮 -->
+    <script type="module" src="index.tsx"></script>
 
     <script>
       window.onerror = function(msg, url, line) {
@@ -104,6 +104,13 @@
           display.innerText = "CRITICAL ERROR: " + msg + "\nLOCATION: " + url + ":" + line;
         }
       };
+      
+      // 自动超时检查
+      setTimeout(() => {
+        if (!document.getElementById('root').innerHTML) {
+          console.warn("Detection: Space initialization is taking longer than expected...");
+        }
+      }, 5000);
     </script>
   </body>
 </html>
