@@ -3,29 +3,27 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-console.log("index.tsx is running...");
+console.log("Digital space sequence started...");
 
-const renderApp = () => {
-  const container = document.getElementById('root');
-  if (!container) {
-    console.error("Root container not found!");
-    return;
-  }
-
+const init = () => {
   try {
+    const container = document.getElementById('root');
+    if (!container) throw new Error("Root container missing from DOM");
+
     const root = createRoot(container);
-    // 移除 StrictMode 以排除双重渲染干扰
     root.render(<App />);
-    console.log("App rendered successfully.");
+    
+    console.info("Success: UI mounted.");
   } catch (err) {
-    console.error("Failed to render app:", err);
-    container.innerHTML = `<div style="color: white; padding: 20px;">Render Error: ${err}</div>`;
+    console.error("Critical mount failure:", err);
+    // 抛出错误以触发 html 中的全局捕获
+    throw err;
   }
 };
 
-// 确保 DOM 完全准备好后再挂载
-if (document.readyState === 'complete') {
-  renderApp();
+// 确保在各种状态下都能正确触发
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
 } else {
-  window.addEventListener('load', renderApp);
+  init();
 }

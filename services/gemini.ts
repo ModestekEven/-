@@ -2,16 +2,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { PERSONAL_INFO, ACHIEVEMENTS } from "../constants";
 
-// 安全获取 API_KEY，防止 process 未定义报错
-const getApiKey = () => {
+// 彻底安全的 API Key 获取方式
+const getSafeApiKey = () => {
   try {
-    return (typeof process !== 'undefined' ? process.env?.API_KEY : '') || "";
-  } catch (e) {
-    return "";
-  }
+    // 优先检查全局 process 对象
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {}
+  return "";
 };
-
-const API_KEY = getApiKey();
 
 const SYSTEM_INSTRUCTION = `
 你是牛渝文的 AI 个人助手。
@@ -27,11 +27,14 @@ const SYSTEM_INSTRUCTION = `
 `;
 
 export const getGeminiResponse = async (userMessage: string) => {
-  const key = getApiKey();
-  if (!key) return "AI 助手目前处于离线演示模式（未检测到 API Key）。";
+  const apiKey = getSafeApiKey();
+  
+  if (!apiKey) {
+    return "你好！我是牛渝文的 AI 助手。目前我正运行在受限环境（未配置 API Key），但我依然可以为你展示渝文的资料。你想了解他的哪项成就？";
+  }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: key });
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: userMessage,
@@ -40,9 +43,9 @@ export const getGeminiResponse = async (userMessage: string) => {
         temperature: 0.7,
       },
     });
-    return response.text || "抱歉，我暂时无法回应。";
+    return response.text || "抱歉，由于星际通讯信号波动，我暂时无法生成回答。";
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "连接 AI 服务时出现了一点小问题，请稍后再试。";
+    console.error("Gemini Error:", error);
+    return "连接 AI 服务时遇到了一点小麻烦，请确保您的网络环境可以访问 Google 服务。";
   }
 };
