@@ -1,11 +1,10 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { PERSONAL_INFO, ACHIEVEMENTS } from "../constants";
+import { GroundingSource } from "../types";
 
-// 彻底安全的 API Key 获取方式
 const getSafeApiKey = () => {
   try {
-    // 优先检查全局 process 对象
     if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
       return process.env.API_KEY;
     }
@@ -23,14 +22,17 @@ const SYSTEM_INSTRUCTION = `
 - 成就：${ACHIEVEMENTS.map(a => a.title).join(', ')}
 
 你的风格应该是专业、睿智、充满活力且有礼貌的。
-你的目标是展示牛渝文在 AI 创业、校园社群运营以及国学方面的深厚积淀。
+对于有关牛渝文的实时动态或行业热点问题，你可以使用搜索功能获取最新信息。
 `;
 
 export const getGeminiResponse = async (userMessage: string) => {
   const apiKey = getSafeApiKey();
   
   if (!apiKey) {
-    return "你好！我是牛渝文的 AI 助手。目前我正运行在受限环境（未配置 API Key），但我依然可以为你展示渝文的资料。你想了解他的哪项成就？";
+    return {
+      text: "你好！我是牛渝文的 AI 助手。目前我正运行在受限环境，但我依然可以为你展示渝文的资料。你想了解他的哪项成就？",
+      sources: []
+    };
   }
 
   try {
@@ -40,12 +42,37 @@ export const getGeminiResponse = async (userMessage: string) => {
       contents: userMessage,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
+        tools: [{ googleSearch: {} }],
         temperature: 0.7,
       },
     });
-    return response.text || "抱歉，由于星际通讯信号波动，我暂时无法生成回答。";
+
+    const text = response.text || "抱歉，由于星际通讯信号波动，我暂时无法生成回答。";
+    
+    // 提取搜索来源
+    const sources: GroundingSource[] = [];
+    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+    if (chunks) {
+      chunks.forEach((chunk: any) => {
+        if (chunk.web && chunk.web.uri) {
+          sources.push({
+            uri: chunk.web.uri,
+            title: chunk.web.title || "来源"
+          });
+        }
+      });
+    }
+
+    // 去重
+    const uniqueSources = Array.from(new Set(sources.map(s => s.uri)))
+      .map(uri => sources.find(s => s.uri === uri)!);
+
+    return { text, sources: uniqueSources };
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "连接 AI 服务时遇到了一点小麻烦，请确保您的网络环境可以访问 Google 服务。";
+    return {
+      text: "连接 AI 服务时遇到了一点小麻烦，请确保您的网络环境可以访问 Google 服务。",
+      sources: []
+    };
   }
 };

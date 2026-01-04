@@ -19,10 +19,9 @@
         margin: 0;
         padding: 0;
         background-color: #020617;
-        background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
         color: #f8fafc;
         font-family: 'Inter', 'Noto Serif SC', sans-serif;
-        overflow: hidden; /* 防止初始化时出现滚动条 */
+        overflow-x: hidden;
       }
       .bg-grid {
         position: fixed;
@@ -33,14 +32,19 @@
         pointer-events: none;
         z-index: -5;
       }
-      .loading-container {
-        height: 100vh;
+      #root:empty + .loading-container {
         display: flex;
+      }
+      .loading-container {
+        position: fixed;
+        inset: 0;
+        display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 20px;
         background: #020617;
+        z-index: 9999;
       }
       .loader-bar {
         width: 200px;
@@ -61,17 +65,8 @@
       @keyframes loading {
         100% { left: 100%; }
       }
-      .error-overlay {
-        position: fixed;
-        inset: 0;
-        background: #000;
-        color: #ff4444;
-        padding: 40px;
-        font-family: monospace;
-        z-index: 9999;
-        display: none;
-      }
     </style>
+    <!-- 极简且稳健的 Import Map -->
     <script type="importmap">
 {
   "imports": {
@@ -88,34 +83,22 @@
 </script>
   </head>
   <body>
-    <div id="error-display" class="error-overlay"></div>
     <div class="bg-grid"></div>
-    <div id="root">
-      <div class="loading-container">
-        <div style="font-size: 10px; letter-spacing: 0.5em; color: #22d3ee; font-weight: bold;">INITIALIZING SPACE</div>
-        <div class="loader-bar"></div>
-        <div style="font-size: 12px; color: rgba(255,255,255,0.3); font-style: italic;">Powered by Gemini 3.0</div>
-      </div>
-    </div>
+    <div id="root"></div>
     
-    <!-- 使用绝对路径尝试加载，确保即使在二级目录下也能找到文件 -->
-    <script type="module">
-      import "./index.tsx";
-      console.log("Entry module loaded.");
-    </script>
+    <div class="loading-container">
+      <div style="font-size: 10px; letter-spacing: 0.5em; color: #22d3ee; font-weight: bold;">INITIALIZING SPACE</div>
+      <div class="loader-bar"></div>
+    </div>
+
+    <script type="module" src="index.tsx"></script>
 
     <script>
-      // 全局错误诊断器：如果是黑屏，它会告诉你发生了什么
-      window.onerror = function(msg, url, line, col, error) {
-        const display = document.getElementById('error-display');
-        display.style.display = 'block';
-        display.innerHTML = `
-          <h1 style="color: white; margin-bottom: 20px;">系统初始化失败</h1>
-          <p>错误信息: ${msg}</p>
-          <p>位置: ${url}:${line}:${col}</p>
-          <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-          <p style="color: #888;">建议: 请检查网络连接或尝试清除浏览器缓存。</p>
-        `;
+      window.onerror = function(msg, url, line) {
+        console.error("Critical Error: " + msg);
+        if (msg.includes('Import map')) {
+          alert('请使用现代浏览器（如 Chrome/Edge）访问以获得最佳体验。');
+        }
       };
     </script>
   </body>
