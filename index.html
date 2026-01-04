@@ -19,13 +19,11 @@
         margin: 0;
         padding: 0;
         background-color: #020617;
-        /* 兜底渐变，确保 JS 未加载前不是纯黑 */
         background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
         color: #f8fafc;
         font-family: 'Inter', 'Noto Serif SC', sans-serif;
         overflow-x: hidden;
       }
-      /* 背景装饰网格 */
       .bg-grid {
         position: fixed;
         inset: 0;
@@ -70,9 +68,9 @@
     "react": "https://esm.sh/react@19.0.0",
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.474.0?external=react",
+    "lucide-react": "https://esm.sh/lucide-react@0.474.0?bundle&deps=react@19.0.0",
     "@google/genai": "https://esm.sh/@google/genai@1.34.0",
-    "react-intersection-observer": "https://esm.sh/react-intersection-observer@9.13.0?external=react",
+    "react-intersection-observer": "https://esm.sh/react-intersection-observer@9.13.0?bundle&deps=react@19.0.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/"
   }
@@ -82,11 +80,20 @@
   <body>
     <div class="bg-grid"></div>
     <div id="root">
-      <!-- 初次加载时的骨架/占位 -->
-      <div style="height: 100vh; display: flex; align-items: center; justify-content: center; font-weight: bold; letter-spacing: 0.2em; color: rgba(255,255,255,0.2);">
-        LOADING EXPERIENCE...
+      <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 20px;">
+        <div style="font-size: 10px; letter-spacing: 0.5em; color: rgba(255,255,255,0.4); font-weight: bold; text-transform: uppercase;">
+          Niu Yuwen Digital Space
+        </div>
+        <div style="width: 40px; height: 1px; background: rgba(34, 211, 238, 0.3);"></div>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.2);">INITIALIZING EXPERIENCE...</div>
       </div>
     </div>
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
+    <script>
+      // 捕获脚本错误并输出到控制台，方便调试
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error('Global Error caught:', message, 'at', source, lineno, ':', colno);
+      };
+    </script>
   </body>
 </html>
