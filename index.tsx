@@ -3,34 +3,22 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-console.log("System initialization sequence engaged...");
+console.log("🚀 Niu Yuwen Space: Core sequence initialized.");
 
-const startApp = () => {
-  try {
-    const container = document.getElementById('root');
-    if (!container) {
-      console.error("Critical: #root element missing");
-      return;
-    }
-
-    const root = createRoot(container);
-    root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-    
-    console.info("System Ready: UI cluster mounted successfully.");
-  } catch (err) {
-    console.error("Initialization Failed:", err);
-    // 触发全局 onerror
-    throw err;
-  }
+const init = () => {
+  const container = document.getElementById('root');
+  if (!container) return;
+  
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 };
 
-// 处理异步加载
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  startApp();
+if (document.readyState === 'complete') {
+  init();
 } else {
-  document.addEventListener('DOMContentLoaded', startApp);
+  window.addEventListener('load', init);
 }

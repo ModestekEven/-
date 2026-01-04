@@ -3,150 +3,139 @@ import React, { useState, useEffect } from 'react';
 import ParticleBackground from './components/ParticleBackground';
 import AiChat from './components/AiChat';
 import { ACHIEVEMENTS, PERSONAL_INFO, CATEGORY_ICONS } from './constants';
-import { MapPin, Calendar, Sparkles, Github, Linkedin, Mail, ArrowRight } from 'lucide-react';
+import { MapPin, Sparkles, ArrowRight, Github, Mail, Linkedin } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
 const App: React.FC = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    console.log("App component mounted.");
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const observerOptions = { threshold: 0.1, triggerOnce: true };
-  const { ref: aboutRef, inView: aboutInView } = useInView(observerOptions);
-  const { ref: achievementsRef, inView: achievementsInView } = useInView(observerOptions);
-  const { ref: philosophyRef, inView: philosophyInView } = useInView(observerOptions);
+  const Section = ({ id, children, className = "" }: { id: string, children: React.ReactNode, className?: string }) => {
+    const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
+    return (
+      <section 
+        id={id} 
+        ref={ref}
+        className={`transition-all duration-1000 transform ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'} ${className}`}
+      >
+        {children}
+      </section>
+    );
+  };
 
   return (
-    <div className="relative min-h-screen bg-slate-950">
-      {/* 粒子背景：-z-20 */}
+    <div className="relative selection:bg-cyan-500/30">
       <ParticleBackground />
-      
-      {/* 聚光灯：-z-10 */}
-      <div 
-        className="fixed pointer-events-none w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[100px] -z-10 transition-transform duration-500 ease-out"
-        style={{ transform: `translate(${mousePos.x - 250}px, ${mousePos.y - 250}px)` }}
-      />
+      <AiChat />
 
-      {/* 主体内容：z-0 及以上 */}
-      <div className="relative z-0">
-        <AiChat />
+      {/* Header Nav */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'glass border-b border-white/5 py-4' : 'py-8'}`}>
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+          <div className="text-2xl font-black tracking-tighter flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center text-slate-950 text-base">N</div>
+            <span className="hidden sm:inline">渝文.AI</span>
+          </div>
+          <div className="flex gap-8 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+            <a href="#about" className="hover:text-cyan-400 transition-colors">About</a>
+            <a href="#projects" className="hover:text-cyan-400 transition-colors">Pulse</a>
+            <a href="#contact" className="hover:text-cyan-400 transition-colors">Link</a>
+          </div>
+        </div>
+      </nav>
 
-        <nav className={`fixed top-0 w-full z-50 px-6 py-4 md:px-12 transition-all duration-300 ${scrolled ? 'glass border-b border-white/10 shadow-lg' : 'bg-transparent'}`}>
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="text-xl font-black tracking-tighter">
-              <span className="text-white">NIU</span> 
-              <span className="text-cyan-400 ml-1">YUWEN</span>
+      {/* Hero Section */}
+      <main className="relative pt-20">
+        <section className="h-screen flex flex-col justify-center items-center px-6 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-8 animate-pulse">
+            <Sparkles size={12} /> Live in Digital Era
+          </div>
+          <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.85] mb-8">
+            <span className="text-white">NIU</span><br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500">YUWEN</span>
+          </h1>
+          <p className="text-slate-400 text-lg md:text-2xl max-w-2xl font-light leading-relaxed mb-12">
+            一位游走在 <span className="text-white font-medium">AI 浪潮</span>、<span className="text-white font-medium">商业实战</span> 与 <span className="text-white font-medium">东方智慧</span> 之间的 Gen Z 创造者。
+          </p>
+          <div className="flex gap-6">
+            <a href="#projects" className="px-10 py-4 bg-white text-slate-950 rounded-full font-black text-sm hover:bg-cyan-400 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/5">
+              EXPLORE WORK
+            </a>
+          </div>
+        </section>
+
+        {/* About Grid */}
+        <Section id="about" className="py-40 px-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="glass p-10 rounded-[2.5rem] border border-white/5 group hover:border-cyan-500/30 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-8">
+                <MapPin size={24} />
+              </div>
+              <h3 className="text-white text-3xl font-black mb-4">西安.Xi'an</h3>
+              <p className="text-slate-400 leading-relaxed">在十三朝古都的深厚底蕴中，探索 AGI 时代的新商业物种。</p>
             </div>
-            <div className="flex gap-6 text-[10px] uppercase tracking-[0.3em] font-bold">
-              <a href="#about" className="hover:text-cyan-400 transition-colors">关于</a>
-              <a href="#achievements" className="hover:text-cyan-400 transition-colors">成就</a>
-              <a href="#philosophy" className="hover:text-cyan-400 transition-colors">理念</a>
+            <div className="md:col-span-2 glass p-10 rounded-[2.5rem] border border-white/5 flex flex-col justify-center">
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                连接前沿技术与<br/><span className="text-cyan-400">实战智慧</span>
+              </h2>
+              <p className="text-slate-400 text-lg leading-relaxed max-w-2xl">
+                作为实战派青年创业联盟联合创始人，我不仅在深圳研究 AI 教育，更在校园流量运营中积累了万级增长经验。我的目标是让 AI 成为每个青年的超能力。
+              </p>
             </div>
           </div>
-        </nav>
+        </Section>
 
-        <header className="relative h-screen flex flex-col items-center justify-center px-6 text-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border-white/10 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              Empowering Youth with AI
+        {/* Achievement Timeline */}
+        <Section id="projects" className="py-40 px-6 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div>
+              <div className="text-cyan-400 font-black tracking-[0.3em] uppercase text-xs mb-4">Milestones</div>
+              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter">成就与轨迹</h2>
             </div>
-            
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-none">
-              <span className="font-sinology text-white">牛渝文</span><br/>
-              <span className="text-gradient">CREATOR</span>
-            </h1>
-            
-            <p className="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
-              {PERSONAL_INFO.motto} <span className="text-slate-600">/</span> <span className="text-white">数字时代的跨界实战派</span>
+            <p className="text-slate-500 max-w-xs text-sm font-medium border-l-2 border-white/10 pl-6 leading-relaxed">
+              从校园 VC 到 AI 教育创始人，每一步都是对“实战”最深刻的诠释。
             </p>
-            
-            <div className="pt-8 flex flex-wrap justify-center gap-4">
-              <a href="#achievements" className="group px-8 py-3.5 rounded-full bg-white text-slate-900 font-bold hover:bg-cyan-400 hover:text-white transition-all transform hover:scale-105 flex items-center gap-2">
-                查看成就
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a href="mailto:contact@yuwen.ai" className="px-8 py-3.5 rounded-full glass border border-white/20 hover:border-white/50 transition-all font-semibold">
-                联系合作
-              </a>
-            </div>
           </div>
-        </header>
 
-        <section id="about" ref={aboutRef} className={`py-32 px-6 reveal ${aboutInView ? 'reveal-visible' : ''}`}>
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { label: '年龄', value: '21', desc: 'Gen Z 创业先行者', icon: <Calendar />, color: 'text-cyan-400' },
-              { label: '坐标', value: '西安', desc: '在古都驱动数字创新', icon: <MapPin />, color: 'text-indigo-400' },
-              { label: '影响力', value: '1w+', desc: '校园社群流量实战专家', icon: <Sparkles />, color: 'text-purple-400' }
-            ].map((stat, i) => (
-              <div key={i} className="glass p-10 rounded-3xl border border-white/10 hover:border-cyan-400/30 transition-all group">
-                <div className={`w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center ${stat.color} mb-6 border border-white/10 group-hover:scale-110 transition-transform`}>
-                  {stat.icon}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ACHIEVEMENTS.map((item, i) => (
+              <div key={i} className="group glass p-8 rounded-3xl border border-white/5 hover:bg-white/5 transition-all flex items-start gap-6">
+                <div className="p-4 rounded-2xl bg-slate-900 border border-white/10 text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all duration-500">
+                  {CATEGORY_ICONS[item.category]}
                 </div>
-                <h3 className="text-4xl font-black text-white mb-1">{stat.value}</h3>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{stat.label}</p>
-                <p className="text-slate-400 text-sm">{stat.desc}</p>
+                <div>
+                  <h4 className="text-white font-bold mb-2 group-hover:text-cyan-400 transition-colors leading-snug">{item.title}</h4>
+                  <span className="text-[10px] uppercase font-black tracking-widest text-slate-500 group-hover:text-slate-300">{item.category}</span>
+                </div>
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
-        <section id="achievements" ref={achievementsRef} className={`py-32 px-6 reveal ${achievementsInView ? 'reveal-visible' : ''}`}>
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-16">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-white">
-                核心 <span className="text-gradient">履历</span>
-              </h2>
-              <div className="w-20 h-1 bg-cyan-400 rounded-full" />
+        {/* Footer */}
+        <footer id="contact" className="py-32 px-6 border-t border-white/5">
+          <div className="max-w-7xl mx-auto flex flex-col items-center">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-400 to-indigo-600 mb-12 flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-cyan-500/20">
+              N
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ACHIEVEMENTS.map((item, index) => (
-                <div key={index} className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-all flex items-center gap-5">
-                  <div className="p-3 rounded-lg bg-slate-900/80 border border-white/10 shadow-lg shrink-0">
-                    {CATEGORY_ICONS[item.category]}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-100 text-sm leading-tight">{item.title}</h4>
-                    <span className="text-[8px] uppercase tracking-[0.2em] text-slate-500 mt-1 block">{item.category}</span>
-                  </div>
-                </div>
-              ))}
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-12 tracking-tighter text-center">
+              一起探索 <span className="text-gradient">AI 驱动</span> 的未来
+            </h2>
+            <div className="flex gap-8 mb-20">
+              <a href="#" className="p-4 rounded-2xl glass border border-white/5 text-slate-400 hover:text-white hover:border-white/20 transition-all"><Github size={24} /></a>
+              <a href="#" className="p-4 rounded-2xl glass border border-white/5 text-slate-400 hover:text-white hover:border-white/20 transition-all"><Linkedin size={24} /></a>
+              <a href="#" className="p-4 rounded-2xl glass border border-white/5 text-slate-400 hover:text-white hover:border-white/20 transition-all"><Mail size={24} /></a>
             </div>
-          </div>
-        </section>
-
-        <footer className="py-20 px-6 border-t border-white/5 bg-slate-950/30">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div>
-              <h2 className="text-2xl font-black text-white tracking-tighter">牛渝文 <span className="text-gradient">NIU</span></h2>
-              <p className="text-slate-500 text-[9px] tracking-[0.3em] uppercase font-bold mt-1">Innovation • Strategy • Culture</p>
+            <div className="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em]">
+              © 2024 NIU YUWEN • DIGITAL ARCHIVE
             </div>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full glass flex items-center justify-center text-slate-400 hover:text-cyan-400 transition-colors"><Github size={18} /></a>
-              <a href="#" className="w-10 h-10 rounded-full glass flex items-center justify-center text-slate-400 hover:text-cyan-400 transition-colors"><Linkedin size={18} /></a>
-              <a href="#" className="w-10 h-10 rounded-full glass flex items-center justify-center text-slate-400 hover:text-cyan-400 transition-colors"><Mail size={18} /></a>
-            </div>
-            <p className="text-slate-600 text-[8px] font-bold tracking-[0.2em] uppercase">© 2024 NIU YUWEN DIGITAL ARCHIVE.</p>
           </div>
         </footer>
-      </div>
+      </main>
     </div>
   );
 };
