@@ -3,27 +3,34 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-console.log("Digital space sequence started...");
+console.log("System initialization sequence engaged...");
 
-const init = () => {
+const startApp = () => {
   try {
     const container = document.getElementById('root');
-    if (!container) throw new Error("Root container missing from DOM");
+    if (!container) {
+      console.error("Critical: #root element missing");
+      return;
+    }
 
     const root = createRoot(container);
-    root.render(<App />);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
     
-    console.info("Success: UI mounted.");
+    console.info("System Ready: UI cluster mounted successfully.");
   } catch (err) {
-    console.error("Critical mount failure:", err);
-    // 抛出错误以触发 html 中的全局捕获
+    console.error("Initialization Failed:", err);
+    // 触发全局 onerror
     throw err;
   }
 };
 
-// 确保在各种状态下都能正确触发
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+// 处理异步加载
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  startApp();
 } else {
-  init();
+  document.addEventListener('DOMContentLoaded', startApp);
 }
