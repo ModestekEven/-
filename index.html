@@ -63,12 +63,11 @@
         color: white;
         padding: 10px;
         font-family: monospace;
-        font-size: 12px;
+        font-size: 11px;
         z-index: 10000;
         display: none;
       }
     </style>
-    <!-- 极简 Import Map，消除一切版本冲突 -->
     <script type="importmap">
 {
   "imports": {
@@ -83,10 +82,6 @@
   }
 }
 </script>
-    <script>
-      // 预注入环境对象，防止部分库访问 process 时崩溃
-      window.process = { env: { API_KEY: "" } };
-    </script>
   </head>
   <body>
     <div id="root"></div>
@@ -98,14 +93,14 @@
 
     <div id="error-display"></div>
 
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
 
     <script>
       window.onerror = function(msg, url, line) {
         const display = document.getElementById('error-display');
         if (display) {
           display.style.display = 'block';
-          display.innerText = "Error: " + msg + "\nIn: " + url + ":" + line;
+          display.innerText = "CRITICAL ERROR: " + msg + "\nLOCATION: " + url + ":" + line;
         }
       };
     </script>
