@@ -22,7 +22,7 @@ const SYSTEM_INSTRUCTION = `
 - 成就：${ACHIEVEMENTS.map(a => a.title).join(', ')}
 
 你的风格应该是专业、睿智、充满活力且有礼貌的。
-对于有关牛渝文的实时动态或行业热点问题，你可以使用搜索功能获取最新信息。
+如果用户询问的问题涉及实时信息、行业动态或需要查证事实，请务必使用 Google Search 工具。
 `;
 
 export const getGeminiResponse = async (userMessage: string) => {
@@ -30,7 +30,7 @@ export const getGeminiResponse = async (userMessage: string) => {
   
   if (!apiKey) {
     return {
-      text: "你好！我是牛渝文的 AI 助手。目前我正运行在受限环境，但我依然可以为你展示渝文的资料。你想了解他的哪项成就？",
+      text: "你好！我是牛渝文的 AI 助手。目前我正运行在受限环境。你想了解他的哪项成就？",
       sources: []
     };
   }
@@ -49,7 +49,7 @@ export const getGeminiResponse = async (userMessage: string) => {
 
     const text = response.text || "抱歉，由于星际通讯信号波动，我暂时无法生成回答。";
     
-    // 提取搜索来源
+    // 提取搜索来源 URLs
     const sources: GroundingSource[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (chunks) {
@@ -57,13 +57,13 @@ export const getGeminiResponse = async (userMessage: string) => {
         if (chunk.web && chunk.web.uri) {
           sources.push({
             uri: chunk.web.uri,
-            title: chunk.web.title || "来源"
+            title: chunk.web.title || "参考来源"
           });
         }
       });
     }
 
-    // 去重
+    // URL 去重
     const uniqueSources = Array.from(new Set(sources.map(s => s.uri)))
       .map(uri => sources.find(s => s.uri === uri)!);
 

@@ -1,13 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, X, MessageSquare, ExternalLink } from 'lucide-react';
+import { Send, Bot, X, MessageSquare, ExternalLink, Globe } from 'lucide-react';
 import { getGeminiResponse } from '../services/gemini';
 import { ChatMessage } from '../types';
 
 const AiChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: '你好！我是牛渝文的 AI 助手。想了解关于他的 AI 创业经历或是对国学的见解吗？', sources: [] }
+    { role: 'model', text: '你好！我是牛渝文的 AI 助手。通过集成 Google Search，我可以为你提供关于牛渝文及 AI 行业的最新资讯。想聊聊吗？', sources: [] }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +33,7 @@ const AiChat: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-[100]">
       {isOpen ? (
         <div className="glass w-80 md:w-96 h-[550px] rounded-2xl flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
@@ -42,11 +42,11 @@ const AiChat: React.FC = () => {
                 <Bot className="text-cyan-400" size={18} />
               </div>
               <div>
-                <span className="font-bold text-sm block leading-none">渝文 AI 助手</span>
-                <span className="text-[10px] text-cyan-400 uppercase tracking-widest font-bold">Online</span>
+                <span className="font-bold text-sm block leading-none text-white">渝文 AI 助手</span>
+                <span className="text-[10px] text-cyan-400 uppercase tracking-widest font-bold">Search Enabled</span>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:text-cyan-400 transition-colors">
+            <button onClick={() => setIsOpen(false)} className="hover:text-cyan-400 transition-colors text-slate-400">
               <X size={20} />
             </button>
           </div>
@@ -63,7 +63,10 @@ const AiChat: React.FC = () => {
                 </div>
                 
                 {msg.role === 'model' && msg.sources && msg.sources.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2 px-1">
+                  <div className="mt-3 flex flex-wrap gap-2 px-1">
+                    <div className="w-full text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Globe size={10} /> 来源参考
+                    </div>
                     {msg.sources.map((source, si) => (
                       <a 
                         key={si}
@@ -73,7 +76,7 @@ const AiChat: React.FC = () => {
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-white/10 text-[10px] text-slate-400 hover:text-cyan-400 hover:border-cyan-400/50 transition-all"
                       >
                         <ExternalLink size={10} />
-                        {source.title.length > 15 ? source.title.substring(0, 15) + '...' : source.title}
+                        {source.title.length > 20 ? source.title.substring(0, 20) + '...' : source.title}
                       </a>
                     ))}
                   </div>
@@ -97,8 +100,8 @@ const AiChat: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="通过搜索了解更多..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-400 transition-colors placeholder:text-slate-500"
+              placeholder="询问关于渝文或 AI 实时动态..."
+              className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors placeholder:text-slate-500"
             />
             <button 
               onClick={handleSend}
@@ -116,7 +119,7 @@ const AiChat: React.FC = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <MessageSquare size={24} className="relative z-10" />
-          <span className="hidden md:block font-bold tracking-wider relative z-10">ASK YUWEN AI</span>
+          <span className="hidden md:block font-bold tracking-wider relative z-10">AI SEARCH</span>
         </button>
       )}
     </div>

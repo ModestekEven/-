@@ -13,7 +13,6 @@
       :root {
         --accent-cyan: #22d3ee;
         --accent-indigo: #818cf8;
-        --accent-purple: #d946ef;
       }
       body {
         margin: 0;
@@ -23,50 +22,32 @@
         font-family: 'Inter', 'Noto Serif SC', sans-serif;
         overflow-x: hidden;
       }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                          linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: -5;
-      }
-      #root:empty + .loading-container {
+      /* 加载动画 */
+      #root:empty + .loading-screen {
         display: flex;
       }
-      .loading-container {
+      .loading-screen {
         position: fixed;
         inset: 0;
+        background: #020617;
         display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 20px;
-        background: #020617;
         z-index: 9999;
       }
-      .loader-bar {
-        width: 200px;
-        height: 2px;
-        background: rgba(34, 211, 238, 0.1);
-        position: relative;
-        overflow: hidden;
+      .loader {
+        width: 40px;
+        height: 40px;
+        border: 2px solid rgba(34, 211, 238, 0.1);
+        border-top-color: #22d3ee;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
-      .loader-bar::after {
-        content: '';
-        position: absolute;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: #22d3ee;
-        animation: loading 1.5s infinite;
-      }
-      @keyframes loading {
-        100% { left: 100%; }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
     </style>
-    <!-- 极简且稳健的 Import Map -->
     <script type="importmap">
 {
   "imports": {
@@ -83,22 +64,18 @@
 </script>
   </head>
   <body>
-    <div class="bg-grid"></div>
     <div id="root"></div>
     
-    <div class="loading-container">
-      <div style="font-size: 10px; letter-spacing: 0.5em; color: #22d3ee; font-weight: bold;">INITIALIZING SPACE</div>
-      <div class="loader-bar"></div>
+    <div class="loading-screen">
+      <div class="loader"></div>
+      <div style="margin-top: 20px; font-size: 10px; letter-spacing: 0.5em; color: #22d3ee; font-weight: bold;">INITIALIZING SPACE</div>
     </div>
 
     <script type="module" src="index.tsx"></script>
 
     <script>
       window.onerror = function(msg, url, line) {
-        console.error("Critical Error: " + msg);
-        if (msg.includes('Import map')) {
-          alert('请使用现代浏览器（如 Chrome/Edge）访问以获得最佳体验。');
-        }
+        console.error("Critical Runtime Error: " + msg + "\nAt: " + url + ":" + line);
       };
     </script>
   </body>
